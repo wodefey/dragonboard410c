@@ -31,6 +31,9 @@ class StepperMotor:
         self.pin4 = self.GP.getPin(pin4)
         self.pinl = [self.pin1, self.pin2, self.pin3, self.pin4]
 
+        for k in range(4):
+            self.pinl[k].out()
+
         self.speed = 100.0
 
     @property
@@ -57,19 +60,22 @@ class StepperMotor:
         """Move the stepper motor shaft dgrees.  If degrees is negative
            the shaft will spin in reverse.
         """
-        pinl = [self.pin1, self.pin2, self.pin3, self.pin4]
+        pinl = list(self.pinl)
         if degrees < 0:
             pinl.reverse()
             degrees = abs(degrees)
 
         steps_per_deg =4076.0/360.0
-        steps = math.floor(steps_per_deg * degrees)
+        steps = int(steps_per_deg * degrees)
 
         delay = 0.03 / self.speed
 
         for k in range(steps):
             seq_inx = k % 8
+            # print("seq_inx= {0:2d}".format(seq_inx))
             for j in range(4):
+                # print("\t Pin= {0:d}".format(j))
+                # print("\t Value= {0:d}".format(StepperMotor.seq[seq_inx][j]))
                 pinl[j].setValue(StepperMotor.seq[seq_inx][j])
                 time.sleep(delay)
 
@@ -78,8 +84,9 @@ if __name__ == "__main__":
 
     try:
         motor.move(180)
+        time.sleep(2)
 
-        motor.speed = 50
+        motor.speed = 10
         motor.move(-90)
 
     finally:
